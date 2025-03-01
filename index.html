@@ -1,1165 +1,524 @@
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FeastMeet - 酷酷年轻人的约饭神器</title>
+    <title>音色测试与歌单推荐</title>
     <style>
         :root {
-            /* 主色调 */
-            --primary: #8C52FF;
-            --primary-dark: #6E3AD9;
-            --primary-light: #A875FF;
-
-            /* 霓虹色调 */
+            /* Primary neon theme */
+            --primary: #9c27b0; /* Deep Purple */
+            --primary-dark: #6a0080;
+            --primary-light: #d05ce3;
+            --accent: #ffca28; /* Amber */
+            --accent-light: #fffd64;
+            --accent-dark: #ff9a00;
             --neon-pink: #FF2E93;
             --neon-blue: #00E9FF;
-            --neon-green: #00FF85;
-            --neon-yellow: #FFDE59;
 
-            /* 暗色背景 */
-            --bg-dark: #121212;
-            --bg-card: #1E1E1E;
-            --bg-card-hover: #252525;
+            /* Dark theme background colors */
+            --bg-primary: #121212; /* Dark */
+            --bg-secondary: #1E1E1E;
+            --bg-tertiary: #303030;
 
-            /* 文本颜色 */
+            /* Text colors */
             --text-primary: #FFFFFF;
             --text-secondary: rgba(255, 255, 255, 0.7);
-            --text-tertiary: rgba(255, 255, 255, 0.5);
             --text-disabled: rgba(255, 255, 255, 0.3);
 
-            /* 边框与阴影 */
-            --border-light: rgba(255, 255, 255, 0.1);
-            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.25);
-            --shadow-neon: 0 0 15px rgba(140, 82, 255, 0.5);
-
-            /* 间距 */
+            /* Spacing */
+            --space-xxs: 2px;
             --space-xs: 4px;
             --space-sm: 8px;
             --space-md: 16px;
             --space-lg: 24px;
             --space-xl: 32px;
+            --space-xxl: 48px;
 
-            /* 圆角 */
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 20px;
-            --radius-full: 9999px;
-        }
+            /* Border Radius */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-xxl: 24px;
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Outfit', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            /* Shadows */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.3);
+            --shadow-neon: 0 0 15px rgba(140, 82, 255, 0.5);
         }
 
         body {
-            background-color: var(--bg-dark);
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-primary);
             color: var(--text-primary);
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-            padding: var(--space-md);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            /* overflow: hidden;  Hide scrollbars */
+        }
+
+        /* Dynamic Particle Background (Homepage) */
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
         }
 
         .app-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--space-xl);
-            justify-content: center;
-            padding-bottom: var(--space-xl);
-        }
-
-        .screen {
             width: 360px;
-            height: 720px;
-            background: var(--bg-dark);
-            border-radius: var(--radius-lg);
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-xl);
             overflow: hidden;
-            position: relative;
-            box-shadow: var(--shadow-card);
-            border: 1px solid var(--border-light);
-        }
-
-        .header {
-            padding: var(--space-md) var(--space-md);
+            box-shadow: var(--shadow-lg);
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: relative;
-            z-index: 10;
+            flex-direction: column;
+            align-items: stretch;
         }
 
-        .header-title {
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .header-action {
-            display: flex;
-            gap: var(--space-sm);
-        }
-
-        .icon-button {
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius-full);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.1);
+        .top-nav {
+            background-color: var(--primary);
             color: var(--text-primary);
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .icon-button:hover,
-        .icon-button:active {
-            background: rgba(255, 255, 255, 0.2);
+            padding: var(--space-md);
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 500;
         }
 
         .content {
-            height: calc(100% - 160px);
+            padding: var(--space-md);
+            flex-grow: 1;
             overflow-y: auto;
-            padding: 0 var(--space-md) var(--space-md);
         }
 
-        .full-content {
-            height: calc(100% - 80px);
-            overflow-y: auto;
-            padding: 0 var(--space-md) var(--space-md);
+        button, .button {
+            background-color: var(--primary);
+            color: var(--text-primary);
+            border: none;
+            padding: var(--space-md) var(--space-xl);
+            border-radius: var(--radius-lg);
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: var(--space-md);
+            width: 100%;
+            box-shadow: var(--shadow-sm);
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
         }
 
-        .nav-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 80px;
-            background: var(--bg-card);
+        button:hover, .button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: var(--space-md);
+            margin: var(--space-sm) 0;
+            border: none;
+            border-radius: var(--radius-md);
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 1em;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            padding: var(--space-md);
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        .sound-sample {
+            display: flex;
+            align-items: center;
+            padding: var(--space-md);
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .sound-sample button {
+            width: auto;
+            padding: var(--space-md);
+            margin: 0;
+        }
+
+        .sound-sample span {
+            margin-left: var(--space-md);
+        }
+
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+        }
+
+        .tag {
+            background-color: var(--primary);
+            color: var(--text-primary);
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .tag:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .tag.selected {
+            background-color: var(--accent);
+            color: var(--bg-primary);
+        }
+
+        .result-report {
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-top: var(--space-md);
+        }
+
+        .result-report h2 {
+            margin-top: 0;
+            margin-bottom: var(--space-md);
+        }
+
+        .playlist-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-md);
+            border-bottom: 1px solid var(--bg-secondary);
+        }
+
+        .playlist-item:last-child {
+            border-bottom: none;
+        }
+
+        .playlist-item button {
+            width: auto;
+            margin: 0;
+            padding: var(--space-sm) var(--space-md);
+        }
+
+        .bottom-nav {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            padding: var(--space-md);
             display: flex;
             justify-content: space-around;
             align-items: center;
-            border-top: 1px solid var(--border-light);
-            padding: 0 var(--space-md);
+            border-top: 1px solid var(--bg-secondary);
+            position: fixed; 
+            bottom: 0; 
+            left: 0;
+            right: 0;
+            z-index: 100; 
+            width: 100%; 
+            max-width: 360px; 
+            margin: 0 auto; 
         }
 
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            color: var(--text-tertiary);
-            text-decoration: none;
-            font-size: 12px;
-        }
-
-        .nav-item.active {
-            color: var(--primary);
-        }
-
-        .nav-icon {
-            font-size: 24px;
-            margin-bottom: var(--space-xs);
-        }
-
-        .card {
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-            margin-bottom: var(--space-md);
-            border: 1px solid var(--border-light);
-            transition: all 0.2s ease;
-        }
-
-        .card:active {
-            transform: scale(0.98);
-            background: var(--bg-card-hover);
-        }
-
-        .feast-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-            margin-bottom: var(--space-md);
-            overflow: hidden;
-            position: relative;
-            box-shadow: var(--shadow-card);
-        }
-
-        .feast-image {
-            height: 150px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feast-image-bg {
-            width: 100%;
-            height: 100%;
-            background-position: center;
-            background-size: cover;
-            filter: brightness(0.7);
-        }
-
-        .feast-details {
-            padding: var(--space-md);
-        }
-
-        .feast-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--space-sm);
-        }
-
-        .feast-date {
-            font-size: 14px;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-        }
-
-        .feast-icon {
-            margin-right: var(--space-xs);
-        }
-
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--space-xs);
-            margin: var(--space-sm) 0;
-        }
-
-        .tag {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-secondary);
-            padding: var(--space-xs) var(--space-sm);
-            border-radius: var(--radius-full);
-            font-size: 12px;
-        }
-
-        .tag.highlighted {
-            background: var(--primary);
-            color: white;
-        }
-
-        .button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: var(--space-md) var(--space-lg);
-            border-radius: var(--radius-full);
-            font-weight: 600;
-            border: none;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: color 0.3s;
         }
 
-        .button.primary {
-            background: var(--primary);
-            color: white;
+        .nav-item:hover {
+            color: var(--accent);
         }
 
-        .button.primary:hover,
-        .button.primary:active {
-            background: var(--primary-dark);
+        .nav-item span {
+            margin-top: var(--space-xs);
         }
 
-        .button.outline {
-            background: transparent;
-            border: 1px solid var(--primary);
-            color: var(--primary);
-        }
-
-        .button.outline:hover,
-        .button.outline:active {
-            background: rgba(140, 82, 255, 0.1);
-        }
-
-        .button.full {
-            width: 100%;
-        }
-
-        .button-icon {
-            margin-right: var(--space-sm);
-        }
-
-        .gradient-text {
-            background: linear-gradient(to right, var(--neon-pink), var(--primary));
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            font-weight: 700;
-        }
-
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin: var(--space-lg) 0 var(--space-md);
-            display: flex;
-            align-items: center;
-        }
-
-        .avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: var(--radius-full);
-            object-fit: cover;
-        }
-
-        .avatar.small {
-            width: 36px;
-            height: 36px;
-        }
-
-        .avatar-group {
-            display: flex;
-            margin-left: var(--space-sm);
-        }
-
-        .avatar-group .avatar {
-            margin-left: -10px;
-            border: 2px solid var(--bg-card);
-        }
-
-        .avatar-group .avatar:first-child {
-            margin-left: 0;
-        }
-
-        .users-more {
-            width: 36px;
-            height: 36px;
-            border-radius: var(--radius-full);
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            margin-left: -10px;
-            border: 2px solid var(--bg-card);
-        }
-
-        .search-bar {
-            display: flex;
-            align-items: center;
-            background: var(--bg-card);
-            border-radius: var(--radius-full);
-            padding: var(--space-sm) var(--space-md);
-            margin-bottom: var(--space-md);
-        }
-
-        .search-icon {
-            color: var(--text-tertiary);
-            margin-right: var(--space-sm);
-        }
-
-        .search-input {
-            background: transparent;
-            border: none;
-            color: var(--text-primary);
-            flex: 1;
-            font-size: 16px;
-        }
-
-        .search-input:focus {
-            outline: none;
-        }
-
-        .categories {
-            display: flex;
-            overflow-x: auto;
-            gap: var(--space-sm);
-            padding: var(--space-xs) 0;
-            margin-bottom: var(--space-md);
-            scrollbar-width: none;
-        }
-
-        .categories::-webkit-scrollbar {
+        .page {
             display: none;
         }
 
-        .category-item {
-            padding: var(--space-sm) var(--space-md);
-            background: var(--bg-card);
-            border-radius: var(--radius-full);
-            white-space: nowrap;
-            color: var(--text-secondary);
-        }
-
-        .category-item.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .form-group {
-            margin-bottom: var(--space-lg);
-        }
-
-        .form-label {
+        .page.active {
             display: block;
-            margin-bottom: var(--space-sm);
+        }
+
+        /* Specific Styles */
+        #recording-status {
+            margin-top: var(--space-md);
+            text-align: center;
+            font-style: italic;
             color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: var(--space-md);
-            background: var(--bg-card);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
-            font-size: 16px;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        textarea.form-input {
-            min-height: 100px;
-            resize: vertical;
-        }
-
-        .form-select {
-            width: 100%;
-            padding: var(--space-md);
-            background: var(--bg-card);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
-            font-size: 16px;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' width='18px' height='18px'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right var(--space-md) center;
-        }
-
-        .form-select:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .chat-message {
-            display: flex;
-            margin-bottom: var(--space-md);
-        }
-
-        .chat-message.outgoing {
-            flex-direction: row-reverse;
-        }
-
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius-full);
-            margin-right: var(--space-sm);
-        }
-
-        .chat-message.outgoing .message-avatar {
-            margin-right: 0;
-            margin-left: var(--space-sm);
-        }
-
-        .message-content {
-            max-width: 70%;
-        }
-
-        .message-bubble {
-            background: var(--bg-card);
-            padding: var(--space-md);
-            border-radius: var(--radius-md);
-            margin-bottom: var(--space-xs);
-        }
-
-        .chat-message.outgoing .message-bubble {
-            background: var(--primary);
-        }
-
-        .message-time {
-            font-size: 12px;
-            color: var(--text-tertiary);
-            text-align: right;
-        }
-
-        .chat-input-container {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: var(--space-md);
-            background: var(--bg-dark);
-            border-top: 1px solid var(--border-light);
-            display: flex;
-            align-items: center;
-        }
-
-        .chat-input {
-            flex: 1;
-            padding: var(--space-md);
-            background: var(--bg-card);
-            border: none;
-            border-radius: var(--radius-full);
-            color: var(--text-primary);
-            margin-right: var(--space-sm);
-        }
-
-        .chat-input:focus {
-            outline: none;
-        }
-
-        .pulse {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: var(--radius-full);
-            background: var(--neon-green);
-            margin-right: var(--space-sm);
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(0.95);
-                box-shadow: 0 0 0 0 rgba(0, 255, 133, 0.5);
-            }
-
-            70% {
-                transform: scale(1);
-                box-shadow: 0 0 0 10px rgba(0, 255, 133, 0);
-            }
-
-            100% {
-                transform: scale(0.95);
-                box-shadow: 0 0 0 0 rgba(0, 255, 133, 0);
-            }
-        }
-
-        .profile-header {
-            background: linear-gradient(to right, var(--neon-blue), var(--primary));
-            padding: var(--space-xl) var(--space-md) var(--space-lg);
-            margin: -16px -16px 0;
-            text-align: center;
-            position: relative;
-        }
-
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: var(--radius-full);
-            border: 3px solid white;
-            margin-bottom: var(--space-sm);
-        }
-
-        .profile-stats {
-            display: flex;
-            justify-content: space-around;
-            margin: var(--space-md) 0;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-tertiary);
-        }
-
-        .login-logo {
-            font-size: 36px;
-            font-weight: 800;
-            text-align: center;
-            margin: var(--space-xl) 0;
-        }
-
-        .social-login {
-            display: flex;
-            justify-content: center;
-            gap: var(--space-md);
-            margin: var(--space-xl) 0;
-        }
-
-        .social-icon {
-            width: 50px;
-            height: 50px;
-            background: var(--bg-card);
-            border-radius: var(--radius-full);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: var(--text-primary);
-        }
-
-        .divider {
-            display: flex;
-            align-items: center;
-            color: var(--text-tertiary);
-            margin: var(--space-xl) 0;
-        }
-
-        .divider:before,
-        .divider:after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: var(--border-light);
-        }
-
-        .divider:before {
-            margin-right: var(--space-md);
-        }
-
-        .divider:after {
-            margin-left: var(--space-md);
-        }
-
-        .create-feast-fab {
-            position: absolute;
-            bottom: 100px;
-            right: var(--space-md);
-            width: 60px;
-            height: 60px;
-            border-radius: var(--radius-full);
-            background: var(--primary);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow-neon);
-            border: none;
-            font-size: 24px;
-            z-index: 100;
-        }
-
-        /* Material Icons */
-        .material-icons {
-            font-family: 'Material Icons';
-            font-weight: normal;
-            font-style: normal;
-            font-size: 24px;
-            /* Preferred icon size */
-            display: inline-block;
-            line-height: 1;
-            text-transform: none;
-            letter-spacing: normal;
-            word-wrap: normal;
-            white-space: nowrap;
-            direction: ltr;
-            -webkit-font-smoothing: antialiased;
-            text-rendering: optimizeLegibility;
-        }
-
-        /* New Styles */
-        .tone-test-screen {
-            background: linear-gradient(to bottom, var(--bg-dark), #0a0a0a);
-        }
-
-        #tone-test-home .full-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        #tone-test-home h1 {
-            font-size: 48px;
-            font-weight: 800;
-            margin-bottom: var(--space-lg);
-        }
-
-        #tone-test-home p {
-            color: var(--text-secondary);
-            margin-bottom: var(--space-xl);
-        }
-
-        .test-step {
-            margin-bottom: var(--space-xl);
-        }
-
-        .test-step h3 {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: var(--space-md);
-        }
-
-        .sample-options {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-md);
-        }
-
-        .sample-button {
-            background: var(--bg-card);
-            color: var(--text-primary);
-            border: 1px solid var(--border-light);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .sample-button:hover {
-            background: var(--bg-card-hover);
-        }
-
-        .genre-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--space-sm);
-        }
-
-        .genre-button {
-            background: var(--bg-card);
-            color: var(--text-secondary);
-            padding: var(--space-sm) var(--space-md);
-            border-radius: var(--radius-full);
-            font-size: 14px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .genre-button.selected {
-            background: var(--primary);
-            color: white;
-        }
-
-        #tone-test-result .result-card {
-            text-align: center;
-            padding: var(--space-xl);
-        }
-
-        #tone-test-result h2 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: var(--space-md);
-        }
-
-        #tone-test-result p {
-            color: var(--text-secondary);
-            margin-bottom: var(--space-lg);
-        }
-
-        .playlist-item {
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-            margin-bottom: var(--space-md);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .playlist-cover {
-            width: 60px;
-            height: 60px;
-            border-radius: var(--radius-sm);
-            object-fit: cover;
-            margin-right: var(--space-md);
-        }
-
-        .playlist-info {
-            flex: 1;
-        }
-
-        .playlist-title {
-            font-weight: 500;
-            margin-bottom: var(--space-xs);
-        }
-
-        .playlist-creator {
-            color: var(--text-tertiary);
-            font-size: 14px;
-        }
-
-        .tone-test-nav-bar {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            height: 60px;
-            background: var(--bg-card);
-            border-top: 1px solid var(--border-light);
-        }
-
-        .tone-test-nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-tertiary);
-            text-decoration: none;
-        }
-
-        .tone-test-nav-item.active {
-            color: var(--primary);
-        }
-
-        .tone-test-nav-icon {
-            font-size: 24px;
-            margin-bottom: var(--space-xs);
-        }
-
-        /* Tone Test Specific Styles */
-        .waveform {
-            width: 100%;
-            height: 100px;
-            margin-bottom: var(--space-md);
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: var(--radius-md);
-        }
-
-        #recordingStatus {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-top: var(--space-sm);
-            text-align: center;
-        }
-
-        #tonality {
-            font-weight: bold;
-            color: var(--neon-pink);
-        }
-
-        #radarChart {
-            width: 100%;
-            height: 200px;
-            /* Placeholder for chart */
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: var(--radius-md);
-        }
-
-        #practiceTip {
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        #playlistList {
-            list-style: none;
-            padding: 0;
-        }
-
-        #playlistList li {
-            margin-bottom: var(--space-sm);
-            padding: var(--space-md);
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-        }
-
-        .result-container {
-            display: flex;
-            flex-direction: column;
-            gap: var(--space-lg);
-        }
-
-        .analysis-report {
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-        }
-
-        .recommended-playlists {
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
-        }
-
-        .practice-suggestions {
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-            padding: var(--space-md);
         }
     </style>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap">
 </head>
+
 <body>
+    <!-- Particle.js Background -->
+    <div id="particles-js"></div>
+
     <div class="app-container">
 
-        <!-- 音色测试 - 首页 -->
-        <div class="screen tone-test-screen" id="tone-test-home">
-            <div class="full-content">
-                <h1>音色测试</h1>
-                <p>探索你的声音特点，发现专属音乐。</p>
-                <button class="button primary" onclick="location.href='#tone-test-step1'">开始音色测试</button>
-                <button class="button outline" onclick="location.href='#hot-playlists'">热门歌单</button>
-                <button class="button outline" onclick="location.href='#user-profile'">我的档案</button>
+        <!-- 启动页 -->
+        <div class="page active" id="splash">
+            <div class="top-nav">
+                音色测试
+            </div>
+            <div class="content" style="text-align: center;">
+                <h1>欢迎使用音色测试工具</h1>
+                <p>找到最适合你的歌曲，并提升你的歌唱技巧！</p>
+                <button onclick="showPage('tonality-test')">开始音色测试</button>
             </div>
         </div>
 
-        <!-- 音色测试 - 步骤1：音域测试 -->
-        <div class="screen tone-test-screen" id="tone-test-step1">
-            <div class="header">
-                <button class="icon-button" onclick="location.href='#tone-test-home'">
-                    <span class="material-icons">arrow_back</span>
-                </button>
-                <div class="header-title">音色测试</div>
-            </div>
-            <div class="full-content">
-                <div class="test-step">
-                    <h3>Step 1: 音域测试</h3>
-                    <p>请试唱以下片段，我们将评估您的音域。</p>
-                    <button class="button primary" id="recordBtn1">开始录音</button>
-                    <div class="waveform" id="waveform1"></div>
-                    <p id="recordingStatus">录音状态: 未录音</p>
-                </div>
-                <button class="button full" onclick="location.href='#tone-test-step2'">下一步</button>
-            </div>
-        </div>
-
-        <!-- 音色测试 - 步骤2：音色选择 -->
-        <div class="screen tone-test-screen" id="tone-test-step2">
-            <div class="header">
-                <button class="icon-button" onclick="location.href='#tone-test-step1'">
-                    <span class="material-icons">arrow_back</span>
-                </button>
-                <div class="header-title">音色测试</div>
-            </div>
-            <div class="full-content">
-                <div class="test-step">
-                    <h3>Step 2: 音色选择</h3>
-                    <p>选择最接近您声音的音色样本。</p>
-                    <div class="sample-options">
-                        <button class="sample-button" data-sample="female_clear">清亮女声 (王菲)</button>
-                        <button class="sample-button" data-sample="male_raspy">沙哑男声 (张学友)</button>
-                        <button class="sample-button" data-sample="male_clear">清澈男声 (周深)</button>
-                        <button class="sample-button" data-sample="male_deep">浑厚男声 (腾格尔)</button>
-                    </div>
-                </div>
-                <button class="button full" onclick="location.href='#tone-test-step3'">下一步</button>
-            </div>
-        </div>
-
-        <!-- 音色测试 - 步骤 3：风格偏好 -->
-        <div class="screen tone-test-screen" id="tone-test-step3">
-            <div class="header">
-                <button class="icon-button" onclick="location.href='#tone-test-step2'">
-                    <span class="material-icons">arrow_back</span>
-                </button>
-                <div class="header-title">音色测试</div>
-            </div>
-            <div class="full-content">
-                <div class="test-step">
-                    <h3>Step 3: 风格偏好</h3>
-                    <p>选择您喜欢的音乐风格 (可多选)。</p>
-                    <div class="genre-options">
-                        <button class="genre-button" data-genre="抒情">抒情</button>
-                        <button class="genre-button" data-genre="摇滚">摇滚</button>
-                        <button class="genre-button" data-genre="经典老歌">经典老歌</button>
-                        <button class="genre-button" data-genre="R&B">R&B</button>
-                        <button class="genre-button" data-genre="民谣">民谣</button>
-                        <button class="genre-button" data-genre="电子">电子</button>
-                    </div>
-                </div>
-                <button class="button full" onclick="location.href='#tone-test-result'">完成测试</button>
-            </div>
-        </div>
-
-        <!-- 音色测试 - 结果页 -->
-        <div class="screen tone-test-screen" id="tone-test-result">
-            <div class="header">
-                <button class="icon-button" onclick="location.href='#tone-test-step3'">
-                    <span class="material-icons">arrow_back</span>
-                </button>
-                <div class="header-title">测试结果</div>
-            </div>
-            <div class="full-content">
-                <div class="result-container">
-                    <div class="analysis-report">
-                        <h3>音色分析报告</h3>
-                        <p>您的音色特点: <span id="tonality">清亮型</span></p>
-                        <div id="radarChart"></div>
-                    </div>
-                    <div class="recommended-playlists">
-                        <h3>推荐歌单</h3>
-                        <ul id="playlistList">
-                            <li>歌单1: ...</li>
-                            <li>歌单2: ...</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="practice-suggestions">
-                    <h3>练习建议</h3>
-                    <p id="practiceTip">尝试用腹式呼吸来增强气息的稳定性。</p>
-                    <button class="button primary" id="recordAndCompareBtn">录音并对比原唱</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 热门歌单页 -->
-        <div class="screen" id="hot-playlists">
-            <div class="header">
-                <button class="icon-button" onclick="location.href='#tone-test-home'">
-                    <span class="material-icons">arrow_back</span>
-                </button>
-                <div class="header-title">热门歌单</div>
+        <!-- 音色测试页 -->
+        <div class="page" id="tonality-test">
+            <div class="top-nav">
+                音色测试
             </div>
             <div class="content">
-                <div class="search-bar">
-                    <span class="material-icons search-icon">search</span>
-                    <input type="text" class="search-input" placeholder="搜索歌单...">
+                <h2>音域测试</h2>
+                <p>!请尝试演唱以下片段，我们会分析您的音域范围。</p>
+                <button onclick="startRecording('low')">开始录制 (低音)</button>
+                <button onclick="startRecording('high')">开始录制 (高音)</button>
+                <div id="recording-status"></div>
+
+                <h2>音色特点</h2>
+                <p>选择与您最接近的音色特点。</p>
+                <div class="sound-sample">
+                    <button onclick="playSound('sample1')"><i class="material-icons">play_arrow</i></button>
+                    <span>清亮型 (如 王菲)</span>
                 </div>
-                <div class="categories">
-                    <div class="category-item active">推荐</div>
-                    <div class="category-item">流行</div>
-                    <div class="category-item">摇滚</div>
-                    <div class="category-item">经典</div>
-                    <div class="category-item">R&B</div>
-                    <div class="category-item">民谣</div>
-                    <div class="category-item">电子</div>
+                <div class="sound-sample">
+                    <button onclick="playSound('sample2')"><i class="material-icons">play_arrow</i></button>
+                    <span>沙哑型 (如 张学友)</span>
+                </div>
+                <div class="sound-sample">
+                    <button onclick="playSound('sample3')"><i class="material-icons">play_arrow</i></button>
+                    <span>温暖型 (如 蔡琴)</span>
                 </div>
 
-                <!-- 歌单列表 -->
-                <div class="playlist-item">
-                    <img src="https://picsum.photos/id/1015/60/60" alt="Playlist Cover" class="playlist-cover">
-                    <div class="playlist-info">
-                        <div class="playlist-title">适合清亮女声的流行歌曲</div>
-                        <div class="playlist-creator">精选 by FeastMeet</div>
-                    </div>
-                    <button class="icon-button">
-                        <span class="material-icons">play_arrow</span>
-                    </button>
+                <h2>风格偏好</h2>
+                <p>选择您喜欢的音乐风格</p>
+                <div class="tag-cloud">
+                    <span class="tag" onclick="selectTag(this)">流行</span>
+                    <span class="tag" onclick="selectTag(this)">摇滚</span>
+                    <span class="tag" onclick="selectTag(this)">R&B</span>
+                    <span class="tag" onclick="selectTag(this)">古典</span>
+                    <span class="tag" onclick="selectTag(this)">民谣</span>
+                    <span class="tag" onclick="selectTag(this)">电子</span>
                 </div>
-
-                <div class="playlist-item">
-                    <img src="https://picsum.photos/id/1016/60/60" alt="Playlist Cover" class="playlist-cover">
-                    <div class="playlist-info">
-                        <div class="playlist-title">低沉男声摇滚精选</div>
-                        <div class="playlist-creator">精选 by FeastMeet</div>
-                    </div>
-                    <button class="icon-button">
-                        <span class="material-icons">play_arrow</span>
-                    </button>
-                </div>
-
-                <div class="playlist-item">
-                    <img src="https://picsum.photos/id/1018/60/60" alt="Playlist Cover" class="playlist-cover">
-                    <div class="playlist-info">
-                        <div class="playlist-title">适合练习气息的经典老歌</div>
-                        <div class="playlist-creator">精选 by FeastMeet</div>
-                    </div>
-                    <button class="icon-button">
-                        <span class="material-icons">play_arrow</span>
-                    </button>
-                </div>
-            </div>
-            <div class="tone-test-nav-bar">
-                <a href="#tone-test-home" class="tone-test-nav-item">
-                    <span class="material-icons tone-test-nav-icon">home</span>
-                    <span>首页</span>
-                </a>
-                <a href="#hot-playlists" class="tone-test-nav-item active">
-                    <span class="material-icons tone-test-nav-icon">library_music</span>
-                    <span>歌单</span>
-                </a>
-                <a href="#user-profile" class="tone-test-nav-item">
-                    <span class="material-icons tone-test-nav-icon">person</span>
-                    <span>我的</span>
-                </a>
+                <button onclick="showPage('result')">查看测试结果</button>
             </div>
         </div>
 
-        <!-- 用户档案页 -->
-        <div class="screen" id="user-profile">
-            <div class="profile-header">
-                <img src="https://randomuser.me/api/portraits/women/33.jpg" class="profile-avatar">
-                <h2>Lisa Wang</h2>
-                <div style="color: rgba(255,255,255,0.7);">美食探险家 | 摄影爱好者</div>
+        <!-- 结果页 -->
+        <div class="page" id="result">
+            <div class="top-nav">
+                测试结果
             </div>
-            <div class="content" style="padding-top: 0;">
-                <div class="profile-stats">
-                    <div class="stat-item">
-                        <div class="stat-value">15</div>
-                        <div class="stat-label">已测试</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">3</div>
-                        <div class="stat-label">已收藏</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value">28</div>
-                        <div class="stat-label">分享</div>
-                    </div>
+            <div class="content">
+                <div class="result-report">
+                    <h2>音色分析报告</h2>
+                    <p>您的音色特点: <span id="tonality-result"></span></p>
+                    <p>音域范围: <span id="range-result"></span></p>
+                    <p>风格偏好: <span id="style-result"></span></p>
                 </div>
-                <div class="card" style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <div style="font-weight: 500;">我的音色</div>
-                        <div style="font-size: 20px; font-weight: 700; color: var(--neon-pink); display: flex; align-items: center;">
-                            <span id="profileTonality">清亮型</span>
-                        </div>
-                    </div>
-                    <div style="width: 50px; height: 50px; border-radius: var(--radius-full); background: var(--primary); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(140, 82, 255, 0.5);">
-                        <span class="material-icons" style="color: var(--bg-dark); font-size: 28px;">music_note</span>
-                    </div>
-                </div>
-                <div class="section-title">偏好风格</div>
-                <div class="tags-container">
-                    <span class="tag highlighted">流行</span>
-                    <span class="tag highlighted">抒情</span>
-                    <span class="tag">经典老歌</span>
-                    <span class="tag">R&B</span>
-                    <span class="tag">民谣</span>
-                </div>
-                <div class="section-title">最近测试</div>
-                <a href="#tone-test-result" class="card" style="margin-bottom: var(--space-md); padding: var(--space-md);">
-                    <div style="display: flex; align-items: center;">
-                        <div style="width: 60px; height: 60px; border-radius: var(--radius-md); background-color: var(--bg-card); display: flex; align-items: center; justify-content: center; margin-right: var(--space-md);">
-                            <span class="material-icons" style="font-size: 36px; color: var(--text-primary);">mic</span>
-                        </div>
-                        <div>
-                            <div style="font-weight: 500;">音色测试</div>
-                            <div style="color: var(--text-secondary); font-size: 14px; margin-top: var(--space-xs);">2024-07-24</div>
-                        </div>
-                    </div>
-                </a>
 
+                <h2>推荐歌单</h2>
+                <ul id="playlist">
+                    <li class="playlist-item">
+                        <span>歌曲1 - 歌手</span>
+                        <button><i class="material-icons">play_arrow</i> 试听</button>
+                    </li>
+                    <li class="playlist-item">
+                        <span>歌曲2 - 歌手</span>
+                        <button><i class="material-icons">play_arrow</i> 试听</button>
+                    </li>
+                    <li class="playlist-item">
+                        <span>歌曲3 - 歌手</span>
+                        <button><i class="material-icons">play_arrow</i> 试听</button>
+                    </li>
+                </ul>
+
+                <h2>练习建议</h2>
+                <p>针对您的音色，我们推荐以下练习:</p>
+                <ul>
+                    <li>气息控制练习</li>
+                    <li>音准练习</li>
+                    <li>情感表达练习</li>
+                </ul>
             </div>
-            <div class="tone-test-nav-bar">
-                <a href="#tone-test-home" class="tone-test-nav-item">
-                    <span class="material-icons tone-test-nav-icon">home</span>
-                    <span>首页</span>
-                </a>
-                <a href="#hot-playlists" class="tone-test-nav-item">
-                    <span class="material-icons tone-test-nav-icon">library_music</span>
-                    <span>歌单</span>
-                </a>
-                <a href="#user-profile" class="tone-test-nav-item active">
-                    <span class="material-icons tone-test-nav-icon">person</span>
-                    <span>我的</span>
-                </a>
+        </div>
+
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="showPage('splash')">
+                <i class="material-icons">home</i>
+                <span>首页</span>
+            </div>
+            <div class="nav-item" onclick="showPage('tonality-test')">
+                <i class="material-icons">mic</i>
+                <span>测试</span>
+            </div>
+            <div class="nav-item" onclick="showPage('result')">
+                <i class="material-icons">music_note</i>
+                <span>结果</span>
             </div>
         </div>
 
     </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone.js/14.8.49/Tone.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/7.6.0/wavesurfer.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.1/dist/js.cookie.min.js"></script>
     <script>
-        document.getElementById('recordBtn1').addEventListener('click', function() {
-            var recordingStatus = document.getElementById('recordingStatus');
-            recordingStatus.textContent = '录音状态: 录音中...';
-            // Here, you would add the actual recording logic
-            // For example using the MediaRecorder API
-
-            // Simulate recording for 5 seconds
-            setTimeout(function() {
-                recordingStatus.textContent = '录音状态: 录音完成';
-            }, 5000);
+        /* particlesJS.load(@dom-id, @path-json, @callback (optional)); */
+        particlesJS.load('particles-js', 'particlesjs-config.json', function () {
+            console.log('callback - particles.js config loaded');
         });
 
-        const genreButtons = document.querySelectorAll('.genre-button');
+        // Function to manage page display
+        function showPage(pageId) {
+            let pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
 
-        genreButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                this.classList.toggle('selected');
+            // Store the current page in a cookie
+            Cookies.set('currentPage', pageId, { expires: 7 }); // Expires in 7 days
+
+            // Update the result page if it's being shown
+            if (pageId === 'result') {
+                updateResultPage();
+            }
+        }
+
+        // Function to load the last visited page from cookie
+        function loadLastVisitedPage() {
+            const lastPage = Cookies.get('currentPage');
+            if (lastPage) {
+                showPage(lastPage);
+            } else {
+                showPage('splash'); // Default to splash page if no cookie
+            }
+        }
+
+        // Load last visited page on page load
+        document.addEventListener('DOMContentLoaded', loadLastVisitedPage);
+
+        function selectTag(tagElement) {
+            tagElement.classList.toggle('selected');
+        }
+
+        let isRecording = false;
+        let audioContext;
+        let mediaRecorder;
+        let audioChunks = [];
+        let recordingType; // Store whether the recording is for 'low' or 'high'
+
+        function startRecording(type) {
+            if (isRecording) {
+                stopRecording();
+                return;
+            }
+
+            recordingType = type; // Store the recording type
+            document.getElementById('recording-status').innerText = '正在录音...';
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    mediaRecorder = new MediaRecorder(stream);
+                    mediaRecorder.ondataavailable = event => {
+                        audioChunks.push(event.data);
+                    };
+                    mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const audio = new Audio(audioUrl);
+                        audio.play();
+                        audioChunks = [];
+                        document.getElementById('recording-status').innerText = '录音完成';
+
+                        // Placeholder for audio analysis
+                        analyzeAudio(audioUrl, type);
+                    };
+                    mediaRecorder.start();
+                    isRecording = true;
+                    document.querySelector(`button[onclick="startRecording('${type}')"]`).innerText = '停止录音';
+                })
+                .catch(err => {
+                    console.error('Error accessing microphone:', err);
+                    document.getElementById('recording-status').innerText = '无法访问麦克风';
+                    isRecording = false;
+                });
+        }
+
+        function stopRecording() {
+            mediaRecorder.stop();
+            isRecording = false;
+            document.getElementById('recording-status').innerText = '录音完成';
+            document.querySelectorAll('button[onclick^="startRecording"]').forEach(button => {
+                button.innerText = button.innerText.replace('停止', '开始');
             });
-        });
+        }
+
+        // Mock analysis results
+        function analyzeAudio(audioUrl, type) {
+            // For demonstration, we'll simulate analysis and store the results.
+            // In a real implementation, you'd send the audio to a server for analysis.
+            let simulatedTonality = "清亮型 (模拟)";
+            let simulatedRange = (type === 'low') ? "C3 - E4 (模拟)" : "E4 - G5 (模拟)";
+            let simulatedStyle = Array.from(document.querySelectorAll('.tag.selected')).map(tag => tag.innerText).join(', ') || "未选择";
+
+            // Store results in localStorage for demonstration purposes
+            localStorage.setItem('tonalityResult', simulatedTonality);
+            localStorage.setItem('rangeResult', simulatedRange);
+            localStorage.setItem('styleResult', simulatedStyle);
+
+            // Update the result page if it's currently active
+            if (document.getElementById('result').classList.contains('active')) {
+                updateResultPage();
+            }
+        }
+
+        // Function to update the result page with stored analysis results
+        function updateResultPage() {
+            let tonalityResult = localStorage.getItem('tonalityResult') || "未测试";
+            let rangeResult = localStorage.getItem('rangeResult') || "未测试";
+            let styleResult = localStorage.getItem('styleResult') || "未选择";
+
+            document.getElementById('tonality-result').innerText = tonalityResult;
+            document.getElementById('range-result').innerText = rangeResult;
+            document.getElementById('style-result').innerText = styleResult;
+        }
+
+        function playSound(sampleId) {
+            // Placeholder function for playing sound samples
+            alert('播放音色样本: ' + sampleId);
+        }
     </script>
 </body>
+
 </html>
