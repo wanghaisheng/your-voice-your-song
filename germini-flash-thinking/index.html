@@ -1,0 +1,876 @@
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音色测试与歌单推荐 - FeastMeet</title>
+    <style>
+        :root {
+            /* 主色调 - 深紫色复古KTV */
+            --primary: #6a0dad; /* 深紫色 */
+            --primary-dark: #4a008f;
+            --primary-light: #8e24aa;
+            --secondary: #ff4081; /* 强调色 - 洋红色 */
+            --accent: #00bcd4; /* 辅助强调色 - 青色 */
+            /* 背景色 */
+            --bg-dark: #121212; /* 深暗灰 */
+            --bg-medium: #1e1e1e; /* 中暗灰 */
+            --bg-light: #2b2b2b; /* 浅暗灰 */
+            --bg-card: #252525; /* 卡片背景 */
+            --bg-hover: #333333; /* hover 效果背景 */
+            /* 文本颜色 */
+            --text-primary: #ffffff; /* 主要文本白色 */
+            --text-secondary: rgba(255, 255, 255, 0.7); /* 次要文本 */
+            --text-tertiary: rgba(255, 255, 255, 0.5); /* 更次要文本 */
+            --text-disabled: rgba(255, 255, 255, 0.3); /* 禁用文本 */
+            /* 边框颜色 */
+            --border-light: rgba(255, 255, 255, 0.1);
+            /* 阴影 */
+            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --shadow-light: 0 2px 5px rgba(0, 0, 0, 0.2);
+            /* 间距 */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-xxl: 48px;
+            /* 圆角 */
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --radius-full: 9999px;
+            /* 字号 */
+            --font-size-sm: 12px;
+            --font-size-md: 14px;
+            --font-size-lg: 16px;
+            --font-size-xl: 20px;
+            --font-size-xxl: 24px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background: linear-gradient(to bottom, var(--primary-dark), var(--bg-dark));
+            color: var(--text-primary);
+            padding: var(--space-md);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 360px;
+            background-color: var(--bg-medium);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-light);
+            display: flex;
+            flex-direction: column;
+            min-height: 720px;
+        }
+
+        .screen {
+            padding: var(--space-md);
+            display: none; /* Initially hide all screens */
+        }
+
+        .screen.active {
+            display: block; /* Show active screen */
+            height: calc(100vh - var(--space-md) * 2); /* Adjust height for padding */
+            overflow-y: auto;
+            padding-bottom: var(--space-xxl); /* Space for fixed bottom elements if needed */
+        }
+
+        /* ---------- Reusable Components ---------- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-md);
+        }
+
+        .header-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+        }
+
+        .icon-button {
+            background-color: var(--bg-light);
+            color: var(--text-primary);
+            border: none;
+            border-radius: var(--radius-full);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .icon-button:hover {
+            background-color: var(--bg-hover);
+        }
+
+        .button {
+            display: inline-block;
+            padding: var(--space-md) var(--space-lg);
+            border-radius: var(--radius-full);
+            background-color: var(--primary);
+            color: var(--text-primary);
+            text-align: center;
+            text-decoration: none;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .button.secondary {
+            background-color: var(--secondary);
+        }
+
+        .button.outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .button:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .button:active {
+            transform: scale(0.98);
+        }
+
+        .full-width {
+            width: 100%;
+            display: block;
+        }
+
+        .input-field {
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            font-size: var(--font-size-lg);
+            width: 100%;
+            margin-bottom: var(--space-md);
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(0, 188, 212, 0.3);
+        }
+
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .tag {
+            background-color: var(--bg-light);
+            color: var(--text-secondary);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-md);
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .tag.selected, .tag:hover {
+            background-color: var(--primary);
+            color: var(--text-primary);
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+            border: 1px solid var(--border-light);
+        }
+
+        .song-item {
+            display: flex;
+            align-items: center;
+            padding: var(--space-sm) 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .song-item:last-child {
+            border-bottom: none;
+        }
+
+        .song-cover {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-sm);
+            margin-right: var(--space-md);
+            background-color: var(--bg-medium); /* Placeholder background */
+        }
+
+        .song-details {
+            flex-grow: 1;
+        }
+
+        .song-title {
+            font-weight: 500;
+        }
+
+        .song-artist {
+            color: var(--text-secondary);
+            font-size: var(--font-size-md);
+        }
+
+        .song-actions {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .song-action-button {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: var(--font-size-lg);
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+        }
+
+        .song-action-button:hover {
+            opacity: 1;
+        }
+
+        .progress-bar {
+            background-color: var(--bg-light);
+            border-radius: var(--radius-full);
+            height: 8px;
+            margin: var(--space-md) 0;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background-color: var(--accent);
+            height: 100%;
+            width: 0%; /* Will be updated by JS */
+            border-radius: var(--radius-full);
+            transition: width 0.3s ease;
+        }
+
+        .analysis-report {
+            text-align: center;
+            margin-bottom: var(--space-lg);
+        }
+
+        .report-label {
+            font-size: var(--font-size-lg);
+            color: var(--text-secondary);
+        }
+
+        .report-value {
+            font-size: var(--font-size-xxl);
+            font-weight: bold;
+            color: var(--accent);
+            margin-top: var(--space-sm);
+        }
+
+        .practice-steps {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .practice-step {
+            margin-bottom: var(--space-md);
+            padding-left: var(--space-lg);
+            position: relative;
+        }
+
+        .practice-step::before {
+            content: '';
+            position: absolute;
+            left: var(--space-md);
+            top: var(--space-sm);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent);
+        }
+
+        .record-visualizer {
+            width: 100%;
+            height: 100px;
+            background-color: var(--bg-medium);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-md);
+            /* Placeholder for waveform visualizer */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-tertiary);
+            font-style: italic;
+        }
+
+
+        /* ---------- Screen Styles ---------- */
+
+        /* Homepage Screen */
+        #homepageScreen {
+            background: linear-gradient(to bottom, var(--primary), var(--bg-dark));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 100%;
+            padding: var(--space-xxl);
+        }
+
+        #homepageScreen h1 {
+            font-size: var(--font-size-xxl);
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            letter-spacing: 1px;
+        }
+
+        #homepageScreen p {
+            color: var(--text-secondary);
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--space-xl);
+        }
+
+        #homepageScreen .button {
+            font-size: var(--font-size-lg);
+            padding: var(--space-lg) var(--space-xxl);
+        }
+
+        /* Test Step Screens */
+        .test-step-screen .header {
+            justify-content: center;
+        }
+
+        .test-step-screen .header-title {
+            font-size: var(--font-size-lg); /* Smaller header for steps */
+        }
+
+        .test-step-screen .step-content {
+            padding: var(--space-lg);
+            text-align: center;
+        }
+
+        .test-step-screen .step-instruction {
+            font-size: var(--font-size-xl);
+            margin-bottom: var(--space-lg);
+        }
+
+        .test-step-screen .sample-audio {
+            margin-bottom: var(--space-xl);
+        }
+
+        .test-step-screen .sample-audio button {
+            padding: var(--space-md) var(--space-lg);
+            font-size: var(--font-size-md);
+        }
+
+        .test-step-screen .visualizer-placeholder {
+            height: 80px;
+            background-color: var(--bg-card);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-xl);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-tertiary);
+            font-style: italic;
+        }
+
+        /* Result Screen */
+        #resultScreen .analysis-report {
+            margin-top: var(--space-lg);
+        }
+
+        #resultScreen .song-list {
+            margin-top: var(--space-xl);
+        }
+
+        #resultScreen .practice-suggestions {
+            margin-top: var(--space-xl);
+        }
+
+        /* Profile Screen */
+        #profileScreen .profile-header {
+            text-align: center;
+            padding: var(--space-xxl) var(--space-lg);
+            margin-bottom: var(--space-xl);
+        }
+
+        #profileScreen .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: var(--radius-full);
+            margin-bottom: var(--space-md);
+            background-color: var(--bg-medium); /* Placeholder avatar */
+        }
+
+        #profileScreen .profile-name {
+            font-size: var(--font-size-xxl);
+            font-weight: bold;
+            margin-bottom: var(--space-sm);
+        }
+
+        #profileScreen .profile-bio {
+            color: var(--text-secondary);
+            margin-bottom: var(--space-lg);
+        }
+
+        #profileScreen .section-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+        }
+
+
+        /* Utility Classes */
+        .text-accent {
+            color: var(--accent);
+        }
+        .text-secondary {
+            color: var(--text-secondary);
+        }
+
+
+    </style>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+
+        <!-- Homepage Screen -->
+        <div class="screen active" id="homepageScreen">
+            <div id="particle-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></div>
+            <h1>欢迎来到音色测试</h1>
+            <p>发现你的独特音色，定制专属歌单，开始你的音乐之旅。</p>
+            <button class="button" onclick="showScreen('testStep1Screen')">开始音色测试</button>
+        </div>
+
+        <!-- Test Step 1: 音域测试 -->
+        <div class="screen test-step-screen" id="testStep1Screen">
+            <div class="header">
+                <h2 class="header-title">音色测试 (1/3)</h2>
+            </div>
+            <div class="step-content">
+                <h3 class="step-instruction">1. 音域评估</h3>
+                <p class="text-secondary">请尝试演唱以下片段，评估你的音域范围。</p>
+                <div class="sample-audio">
+                    <button class="button outline play-sample" data-audio="lowRangeSample">播放低音示例</button>
+                    <button class="button outline play-sample" style="margin-left: var(--space-md);" data-audio="highRangeSample">播放高音示例</button>
+                    <audio id="lowRangeSample" src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3"></audio>
+                    <audio id="highRangeSample" src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/bubbles.mp3"></audio>
+                </div>
+                <div class="visualizer-placeholder">音域可视化区域</div>
+                <button class="button full-width" onclick="showScreen('testStep2Screen')">下一步</button>
+                <button class="button outline full-width" onclick="showScreen('homepageScreen')" style="margin-top: var(--space-sm);">返回</button>
+            </div>
+        </div>
+
+        <!-- Test Step 2: 音色特点识别 -->
+        <div class="screen test-step-screen" id="testStep2Screen">
+            <div class="header">
+                <h2 class="header-title">音色测试 (2/3)</h2>
+            </div>
+            <div class="step-content">
+                <h3 class="step-instruction">2. 音色特点识别</h3>
+                <p class="text-secondary">选择最符合你声音特点的选项。</p>
+                <div class="sample-audio">
+                    <button class="button outline play-sample" data-audio="brightSample">清亮型示例</button>
+                    <button class="button outline play-sample" style="margin-left: var(--space-md);" data-audio="huskySample">沙哑型示例</button>
+                    <button class="button outline play-sample" style="margin-left: var(--space-md);" data-audio="warmSample">温暖型示例</button>
+                    <audio id="brightSample" src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3"></audio>
+                    <audio id="huskySample" src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/bubbles.mp3"></audio>
+                    <audio id="warmSample" src="https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.mp3"></audio>
+                </div>
+                <div class="tag-cloud" data-selection-type="single">
+                    <span class="tag" data-tag-type="voiceType">清亮</span>
+                    <span class="tag" data-tag-type="voiceType">沙哑</span>
+                    <span class="tag" data-tag-type="voiceType">温暖</span>
+                    <span class="tag" data-tag-type="voiceType">磁性</span>
+                    <span class="tag" data-tag-type="voiceType">浑厚</span>
+                    <span class="tag" data-tag-type="voiceType">甜美</span>
+                </div>
+                <button class="button full-width" onclick="showScreen('testStep3Screen')">下一步</button>
+                <button class="button outline full-width" onclick="showScreen('testStep1Screen')" style="margin-top: var(--space-sm);">返回</button>
+            </div>
+        </div>
+
+        <!-- Test Step 3: 风格偏好选择 -->
+        <div class="screen test-step-screen" id="testStep3Screen">
+            <div class="header">
+                <h2 class="header-title">音色测试 (3/3)</h2>
+            </div>
+            <div class="step-content">
+                <h3 class="step-instruction">3. 风格偏好</h3>
+                <p class="text-secondary">选择你喜欢的音乐风格 (可多选)。</p>
+                <div class="tag-cloud" data-selection-type="multiple">
+                    <span class="tag" data-tag-type="musicGenre">流行</span>
+                    <span class="tag" data-tag-type="musicGenre">摇滚</span>
+                    <span class="tag" data-tag-type="musicGenre">R&B</span>
+                    <span class="tag" data-tag-type="musicGenre">民谣</span>
+                    <span class="tag" data-tag-type="musicGenre">电子</span>
+                    <span class="tag" data-tag-type="musicGenre">爵士</span>
+                    <span class="tag" data-tag-type="musicGenre">古典</span>
+                    <span class="tag" data-tag-type="musicGenre">说唱</span>
+                    <span class="tag" data-tag-type="musicGenre">乡村</span>
+                    <span class="tag" data-tag-type="musicGenre">金属</span>
+                </div>
+                <button class="button full-width" onclick="showScreen('resultScreen')">查看结果</button>
+                <button class="button outline full-width" onclick="showScreen('testStep2Screen')" style="margin-top: var(--space-sm);">返回</button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div class="screen" id="resultScreen">
+            <div class="header">
+                <h2 class="header-title">测试结果</h2>
+            </div>
+            <div class="analysis-report">
+                <h3 class="report-label">你的音色类型</h3>
+                <p class="report-value text-accent" id="voiceTypeResult">温暖抒情型</p>
+                <p class="text-secondary">音域：<span class="text-accent" id="voiceRangeResult">中高音</span> | 音色特点：<span class="text-accent" id="voiceFeatureResult">温暖、柔和</span></p>
+            </div>
+
+            <div class="card song-list">
+                <h3>为你推荐的歌单</h3>
+                <div class="song-item">
+                    <div class="song-cover" style="background-image: url('https://interactive-examples.mdn.mozilla.net/media/cc0-images/artwork/miss-vanjie-480x480.jpg'); background-size: cover;"></div>
+                    <div class="song-details">
+                        <div class="song-title">歌曲名称 1</div>
+                        <div class="song-artist">歌手/乐队</div>
+                    </div>
+                    <div class="song-actions">
+                        <button class="song-action-button"><i class="material-icons">play_circle_outline</i></button>
+                        <button class="song-action-button"><i class="material-icons">add_circle_outline</i></button>
+                    </div>
+                </div>
+                <div class="song-item">
+                    <div class="song-cover" style="background-image: url('https://interactive-examples.mdn.mozilla.net/media/cc0-images/artwork/moonrise-480x480.jpg'); background-size: cover;"></div>
+                    <div class="song-details">
+                        <div class="song-title">歌曲名称 2</div>
+                        <div class="song-artist">歌手/乐队</div>
+                    </div>
+                    <div class="song-actions">
+                        <button class="song-action-button"><i class="material-icons">play_circle_outline</i></button>
+                        <button class="song-action-button"><i class="material-icons">add_circle_outline</i></button>
+                    </div>
+                </div>
+                <div class="song-item">
+                    <div class="song-cover" style="background-image: url('https://interactive-examples.mdn.mozilla.net/media/cc0-images/artwork/pumpkins-480x480.jpg'); background-size: cover;"></div>
+                    <div class="song-details">
+                        <div class="song-title">歌曲名称 3</div>
+                        <div class="song-artist">歌手/乐队</div>
+                    </div>
+                    <div class="song-actions">
+                        <button class="song-action-button"><i class="material-icons">play_circle_outline</i></button>
+                        <button class="song-action-button"><i class="material-icons">add_circle_outline</i></button>
+                    </div>
+                </div>
+                <div class="song-item">
+                    <div class="song-cover" style="background-image: url('https://interactive-examples.mdn.mozilla.net/media/cc0-images/artwork/red-t-480x480.jpg'); background-size: cover;"></div>
+                    <div class="song-details">
+                        <div class="song-title">歌曲名称 4</div>
+                        <div class="song-artist">歌手/乐队</div>
+                    </div>
+                    <div class="song-actions">
+                        <button class="song-action-button"><i class="material-icons">play_circle_outline</i></button>
+                        <button class="song-action-button"><i class="material-icons">add_circle_outline</i></button>
+                    </div>
+                </div>
+                <div class="song-item">
+                    <div class="song-cover" style="background-image: url('https://interactive-examples.mdn.mozilla.net/media/cc0-images/artwork/rhino-480x480.jpg'); background-size: cover;"></div>
+                    <div class="song-details">
+                        <div class="song-title">歌曲名称 5</div>
+                        <div class="song-artist">歌手/乐队</div>
+                    </div>
+                    <div class="song-actions">
+                        <button class="song-action-button"><i class="material-icons">play_circle_outline</i></button>
+                        <button class="song-action-button"><i class="material-icons">add_circle_outline</i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card practice-suggestions">
+                <h3>练习建议</h3>
+                <ul class="practice-steps">
+                    <li class="practice-step">
+                        <p><strong>气息训练：</strong> 每日进行<span class="text-accent">腹式呼吸</span>练习，增强气息的稳定性和持久力，尝试演唱长音阶。</p>
+                    </li>
+                    <li class="practice-step">
+                        <p><strong>音准练习：</strong> 使用音准App或工具，针对性练习<span class="text-accent">半音阶</span>和歌曲片段，提高音准的准确性。</p>
+                    </li>
+                    <li class="practice-step">
+                        <p><strong>情感表达：</strong> 尝试在演唱中融入情感，通过声音的<span class="text-accent">节奏变化</span>、快慢来表达歌曲的情感。</p>
+                    </li>
+                    <li class="practice-step">
+                        <p><strong>共鸣练习：</strong> 学习如何运用<span class="text-accent">胸腔共鸣</span>，让声音更加浑厚和有穿透力。</p>
+                    </li>
+                </ul>
+                <div class="record-visualizer">录音对比工具占位</div>
+                <button class="button outline full-width">开始录音练习</button>
+            </div>
+            <button class="button outline full-width" onclick="showScreen('testStep3Screen')" style="margin-top: var(--space-sm);">重新测试</button>
+        </div>
+
+        <!-- Profile Screen -->
+        <div class="screen" id="profileScreen">
+            <div class="profile-header">
+                <div class="profile-avatar" style="background-image: url('https://randomuser.me/api/portraits/women/70.jpg'); background-size: cover;"></div>
+                <h2 class="profile-name" id="userName">用户昵称</h2>
+                <p class="profile-bio" id="userBio">音乐爱好者 | 唱歌达人</p>
+            </div>
+            <div class="card">
+                <h3 class="section-title">历史测试记录</h3>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" style="width: 70%;"></div>
+                </div>
+                <p class="text-secondary">上次测试：<span id="lastTestType">温暖抒情型</span> (<span id="lastTestDate">一周前</span>)</p>
+                <!-- History chart or list can be added here -->
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">我的歌单</h3>
+                <div class="song-item">
+                    <div class="song-cover" style="background-image: url('https://interactive-examples.mdn.mozilla.net/media/cc0-images/artwork/yellow-rose-480x480.jpg'); background-size: cover;"></div>
+                    <div class="song-details">
+                        <div class="song-title">我的最爱歌单</div>
+                        <div class="song-artist">创建于 2023-10-27</div>
+                    </div>
+                    <div class="song-actions">
+                        <button class="song-action-button"><i class="material-icons">play_circle_outline</i></button>
+                        <button class="song-action-button"><i class="material-icons">edit</i></button>
+                    </div>
+                </div>
+                <div class="song-item">
+                    <div class="song-cover" style="background-image: url('https://interactive-examples.mdn.mozilla.net/media/cc0-images/artwork/yellow-t-shirt-480x480.jpg'); background-size: cover;"></div>
+                    <div class="song-details">
+                        <div class="song-title">KTV必唱</div>
+                        <div class="song-artist">创建于 2023-11-15</div>
+                    </div>
+                    <div class="song-actions">
+                        <button class="song-action-button"><i class="material-icons">play_circle_outline</i></button>
+                        <button class="song-action-button"><i class="material-icons">edit</i></button>
+                    </div>
+                </div>
+                <div class="song-item">
+                    <div class="song-cover" style="background-image: url('https://interactive-examples.mdn.mozilla.net/media/cc0-images/artwork/vectors-480x480.jpg'); background-size: cover;"></div>
+                    <div class="song-details">
+                        <div class="song-title">跑步音乐</div>
+                        <div class="song-artist">创建于 2023-12-01</div>
+                    </div>
+                    <div class="song-actions">
+                        <button class="song-action-button"><i class="material-icons">play_circle_outline</i></button>
+                        <button class="song-action-button"><i class="material-icons">edit</i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        function showScreen(screenId) {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        document.querySelectorAll('.tag-cloud').forEach(tagCloud => {
+            const selectionType = tagCloud.dataset.selectionType;
+            tagCloud.querySelectorAll('.tag').forEach(tag => {
+                tag.addEventListener('click', function() {
+                    if (selectionType === 'single') {
+                        tagCloud.querySelectorAll('.tag.selected').forEach(t => t.classList.remove('selected'));
+                        this.classList.add('selected');
+                    } else {
+                        this.classList.toggle('selected');
+                    }
+                });
+            });
+        });
+
+
+        document.querySelectorAll('.play-sample').forEach(button => {
+            button.addEventListener('click', function() {
+                const audioId = this.dataset.audio;
+                const audio = document.getElementById(audioId);
+                if (audio) {
+                    audio.play();
+                }
+            });
+        });
+
+
+        /* particlesJS('dom-id', params);
+         * @dom-id - string css id
+         * @params - object js object with particles configurations
+         */
+        if (document.getElementById('particle-canvas')) {
+            particlesJS('particle-canvas', {
+                particles: {
+                    number: {
+                        value: 80,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: '#8e24aa' // Use --primary-light for particle color
+                    },
+                    shape: {
+                        type: 'circle',
+                        stroke: {
+                            width: 0,
+                            color: '#000000'
+                        },
+                        polygon: {
+                            nb_sides: 5
+                        },
+                        image: {
+                            src: 'img/github.svg',
+                            width: 100,
+                            height: 100
+                        }
+                    },
+                    opacity: {
+                        value: 0.5,
+                        random: true,
+                        anim: {
+                            enable: false,
+                            speed: 1,
+                            opacity_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    size: {
+                        value: 3,
+                        random: true,
+                        anim: {
+                            enable: false,
+                            speed: 40,
+                            size_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: '#8e24aa', // Use --primary-light for line color
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: 'none',
+                        random: false,
+                        straight: false,
+                        out_mode: 'out',
+                        attract: {
+                            enable: false,
+                            rotateX: 600,
+                            rotateY: 1200
+                        }
+                    }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: 'grab'
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: 'push'
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        grab: {
+                            distance: 140,
+                            line_linked: {
+                                opacity: 1
+                            }
+                        },
+                        push: {
+                            particles_nb: 4
+                        },
+                        remove: {
+                            particles_nb: 2
+                        }
+                    }
+                },
+                retina_detect: true,
+                config_demo: {
+                    hide_card: false,
+                    background_color: '#b61924',
+                    background_image: '',
+                    background_position: '50% 50%',
+                    background_repeat: 'no-repeat',
+                    background_size: 'cover'
+                }
+            });
+        }
+
+        // Fake data for results and profile
+        const voiceTypes = [
+            { type: "温暖抒情型", range: "中高音", feature: "温暖、柔和" },
+            { type: "清亮高亢型", range: "高音", feature: "清亮、穿透" },
+            { type: "磁性浑厚型", range: "中低音", feature: "磁性、浑厚" },
+            { type: "甜美柔和型", range: "中音", feature: "甜美、柔和" },
+            { type: "沙哑烟嗓型", range: "中低音", feature: "沙哑、性感" }
+        ];
+
+        const userNames = ["李明", "王芳", "张伟", "赵静", "陈涛"];
+        const userBios = ["流行音乐爱好者", "民谣吉他手", "摇滚发烧友", "古典音乐迷", "电子音乐制作人"];
+        const lastTestDates = ["一周前", "2周前", "1个月前", "2个月前", "3个月前"];
+
+        function setFakeData() {
+            const randomVoice = voiceTypes[Math.floor(Math.random() * voiceTypes.length)];
+            document.getElementById('voiceTypeResult').textContent = randomVoice.type;
+            document.getElementById('voiceRangeResult').textContent = randomVoice.range;
+            document.getElementById('voiceFeatureResult').textContent = randomVoice.feature;
+
+            const randomUserName = userNames[Math.floor(Math.random() * userNames.length)];
+            document.getElementById('userName').textContent = randomUserName;
+            const randomUserBio = userBios[Math.floor(Math.random() * userBios.length)];
+            document.getElementById('userBio').textContent = randomUserBio;
+            const randomLastTestDate = lastTestDates[Math.floor(Math.random() * lastTestDates.length)];
+            document.getElementById('lastTestDate').textContent = randomLastTestDate;
+            document.getElementById('lastTestType').textContent = voiceTypes[Math.floor(Math.random() * voiceTypes.length)].type;
+        }
+
+        // Call setFakeData when the page loads, or when test is completed. For now, call it on homepage load for demonstration.
+        if (document.getElementById('homepageScreen')) { //Just to ensure it's called when homepage is active for demo
+            setFakeData();
+        }
+    </script>
+</body>
+</html>
